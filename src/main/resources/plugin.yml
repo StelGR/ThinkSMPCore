@@ -1,8 +1,10 @@
-name: Core
-version: 0.0.1
-main: me.nv.Core
-authors: [Uknown]
+name: ThinkSMPCore
+version: 0.5.4
+main: me.thinksmp.Core
+authors: [Stel]
 api-version: 1.21.5
+softdepend:
+  - UltimateTeams
 commands:
   message:
     description: Send a private message to a player
@@ -13,3 +15,66 @@ commands:
   gamemode:
     description: Change gamemode (Admin Only)
     aliases: gm
+  staffchat:
+    description: Staff Chat for private messages
+    aliases: sc
+  staffscoreboard:
+    description: Toggle the staff scoreboard
+    aliases: ssc
+  vanish:
+    description: Disappear
+    aliases: v
+  leaderboard:
+    description: Check the top scoring players
+    aliases: [top, pointtop]
+  points:
+    description: Manage the points of a player (Admin Only)
+  information:
+    description: Learn about a player
+    aliases: [info, i]
+  settings:
+    description: Change your profile settings
+  tpa:
+    description: Send a teleport request
+    usage: /tpa <player>
+  tpaccept:
+    description: Accept the latest teleport request
+    usage: /tpaccept
+    aliases: [tpayes, tpyes]
+  tpdeny:
+    description: Deny the latest teleport request
+    usage: /tpdeny
+    aliases: [tpno, tpano]
+  tpcancel:
+    description: Cancel your own TPA request
+    usage: /tpcancel
+    aliases: [tpacancel]
+  crateeventtest:
+    description: Crate event test (Admin only)
+  guild:
+    description: Guild command
+    aliases: [teams]
+  wild:
+    description: Randomly teleport to a new location
+    aliases: rtp
+    usage: /wild
+  enderchest:
+    aliases: [ ec, echest ]
+    description: Open your enderchest (VIP Only)
+  anvil:
+    description: Open an anvil (VIP Only)
+  smithingtable:
+      aliases: [ smithing, smith ]
+      description: Open a smithing table (VIP Only)
+  thinkitem:
+    aliases: [i]
+  setcorner:
+    aliases: [ posi ]
+  grace:
+    usage: /grace <start|stop|status>
+  sethome:
+    description: Set your home(s).
+    usage: /sethome [1-5]
+  home:
+    description: Teleport to home(s).
+    usage: /home [1-5]
