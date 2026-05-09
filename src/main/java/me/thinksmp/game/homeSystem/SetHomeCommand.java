@@ -38,6 +38,7 @@ public class SetHomeCommand implements CommandExecutor {
 
     private int parseHomeId(Player player, String[] args) {
         boolean vip = player.hasPermission(Permissions.VIP.getPermission());
+        boolean media = player.hasPermission(Permissions.MEDIA.getPermission());
 
         if (args.length == 0) {
             return 1;
@@ -62,8 +63,13 @@ public class SetHomeCommand implements CommandExecutor {
             return -1;
         }
 
-        if (!vip && homeId != 1) {
-            player.sendMessage(GeneralUtility.translate("&cOnly VIP players can use multiple homes."));
+        if (media && homeId > 2) {
+            player.sendMessage(GeneralUtility.translate("&cYou can only have up to 2 homes."));
+            return -1;
+        }
+
+        if ((!vip && !media) && homeId != 1) {
+            player.sendMessage(GeneralUtility.translate("&cYou can only have up to 1 home."));
             return -1;
         }
 

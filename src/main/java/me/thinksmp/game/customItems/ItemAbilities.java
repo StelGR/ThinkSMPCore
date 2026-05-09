@@ -290,7 +290,7 @@ public class ItemAbilities implements Listener {
         CustomItem item = Core.getItemManager().getType(player.getInventory().getItemInMainHand());
 
         if (item == CustomItem.PICKAXE) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, 40, 0, false, false, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, 40, 1, false, false, false));
         }
     }
 
@@ -339,7 +339,8 @@ public class ItemAbilities implements Listener {
                 || material == Material.LAPIS_ORE
                 || material == Material.DEEPSLATE_LAPIS_ORE
                 || material == Material.DIAMOND_ORE
-                || material == Material.DEEPSLATE_DIAMOND_ORE;
+                || material == Material.DEEPSLATE_DIAMOND_ORE
+                || material == Material.ANCIENT_DEBRIS;
     }
 
     private Material randomBonusOreDrop(Material mined) {
@@ -351,7 +352,8 @@ public class ItemAbilities implements Listener {
                 Material.REDSTONE,
                 Material.EMERALD,
                 Material.LAPIS_LAZULI,
-                Material.DIAMOND
+                Material.DIAMOND,
+                Material.NETHERITE_INGOT
         };
 
         return drops[(int) (Math.random() * drops.length)];

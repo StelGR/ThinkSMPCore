@@ -22,8 +22,6 @@ public enum Points {
     WITHER(25000),
     ENDER_DRAGON(250000);
 
-
-
     private final int points;
 
     Points(int points) {

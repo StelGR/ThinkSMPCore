@@ -21,12 +21,14 @@ public class SmithingTable implements CommandExecutor {
             return true;
         }
 
-        if (!player.hasPermission(Permissions.VIP.getPermission())) {
+        if (player.hasPermission(Permissions.VIP.getPermission()) || player.hasPermission(Permissions.MEDIA.getPermission())) {
+            player.openInventory(MenuType.SMITHING.create(player, "Smithing Table"));
+            return true;
+        } else {
             player.sendMessage("§cNo permission");
             return true;
         }
 
-        player.openInventory(MenuType.SMITHING.create(player, "Smithing Table"));
-        return true;
+
     }
 }

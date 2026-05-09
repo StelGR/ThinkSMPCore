@@ -10,6 +10,7 @@ public enum Permissions {
     VANISH_SEE("thinksmp.vanish.see"),
     GAMEMODE("thinksmp.gm"),
     VIP("thinksmp.vip"),
+    MEDIA("thinksmp.media"),
     GAMEMODE_OTHERS("thinksmp.gm.others"),
     ADMIN("thinksmp.admin"); // use this for all permissions
 
