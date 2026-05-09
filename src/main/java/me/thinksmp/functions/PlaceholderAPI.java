@@ -48,6 +48,14 @@ public class PlaceholderAPI extends PlaceholderExpansion implements Listener {
                 if (p == null) yield "";
                 yield Core.getGroupManagerFunction().getGroup(p);
             }
+            case "team" -> {
+                if (p == null) yield "";
+                yield Core.getPlugin()
+                        .getUltimateTeamsAPI()
+                        .findTeamByMember(p.getUniqueId())
+                        .map(team -> " &8[&f" + team.getName() + "&8]")
+                        .orElse("");
+            }
             case "points" -> {
                 if (p == null) yield "";
                 yield GeneralUtility.formatNumberWithDots(Core.getPlayerDataManager().getPlayerData(p).getPoints());

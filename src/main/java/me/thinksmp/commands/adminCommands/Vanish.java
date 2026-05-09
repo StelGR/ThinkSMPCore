@@ -34,7 +34,6 @@ public class Vanish implements CommandExecutor {
             player.sendMessage(ChatColor.GRAY + "You are no longer vanished.");
 
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer == player) continue;
 
                 if (getRamManager().getVanishedPlayers().contains(onlinePlayer)) {
                     if (player.hasPermission(Permissions.VANISH_SEE.getPermission())) {
@@ -47,8 +46,6 @@ public class Vanish implements CommandExecutor {
             getPlayerDataManager().getPlayerData(player).setVanish(true);
             player.sendMessage(ChatColor.GRAY + "You are now vanished.");
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer == player) continue;
-
                 if (getRamManager().getVanishedPlayers().contains(onlinePlayer)) {
                     if (player.hasPermission(Permissions.VANISH_SEE.getPermission())) {
                         player.sendMessage(player.getDisplayName() + ChatColor.GRAY + " has vanished.");

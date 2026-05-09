@@ -78,12 +78,8 @@ public class PointEventListener implements Listener {
         }
 
         int points = switch (type) {
-            case SUGAR_CANE -> 10;
-            case BOOKSHELF -> 15;
-            case PUMPKIN, BAMBOO, MELON, POTATOES -> 20;
+            case PUMPKIN, BAMBOO, MELON, POTATOES, BOOKSHELF -> 10;
             case CARROTS, CACTUS -> 5;
-            case WHEAT -> 30;
-            case NETHER_WART, BEETROOT -> 50;
             case COAL_ORE, DEEPSLATE_COAL_ORE -> Points.COAL_ORE.getPoints();
             case COPPER_ORE, DEEPSLATE_COPPER_ORE -> Points.COPPER_ORE.getPoints();
             case IRON_ORE, DEEPSLATE_IRON_ORE -> Points.IRON_ORE.getPoints();

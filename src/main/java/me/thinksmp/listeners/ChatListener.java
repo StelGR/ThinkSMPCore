@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.thinksmp.utility.GeneralUtility.translate;
 
@@ -130,22 +129,27 @@ public class ChatListener extends ListenerAdapter implements Listener {
             }
 
             boolean isStaffChat = false;
+
             if (player.hasPermission(Permissions.STAFF_CHAT.getPermission()) || player.hasPermission(Permissions.ADMIN.getPermission())) {
                 boolean staffChatActive = originalMessage.startsWith("#") || (playerData != null && playerData.isStaffChat());
-                if (staffChatActive && !processedMessage.replace("#", "").trim().isEmpty()) {
-                    isStaffChat = true;
-                    String staffMessageContent = processedMessage.replace("#", "").trim();
 
-                    // Set staff chat format and adjust recipients
-                    event.setFormat(translate("&8[&cStaff&8-&cChat&8] &f%1$s&f: %2$s"));
-                    event.setMessage(staffMessageContent);
+                if (staffChatActive) {
+                    String staffMessageContent = processedMessage.trim();
 
-                    // Limit recipients to staff members
-                    Set<Player> staffRecipients = Bukkit.getOnlinePlayers().stream()
-                            .filter(p -> p.hasPermission(Permissions.STAFF_CHAT.getPermission()))
-                            .collect(Collectors.toSet());
-                    event.getRecipients().clear();
-                    event.getRecipients().addAll(staffRecipients);
+                    if (originalMessage.startsWith("#") && staffMessageContent.startsWith("#")) {
+                        staffMessageContent = staffMessageContent.substring(1).trim();
+                    }
+
+                    if (!staffMessageContent.isEmpty()) {
+                        isStaffChat = true;
+                        event.setCancelled(true);
+
+                        for (Player online : Bukkit.getOnlinePlayers()) {
+                            if (online.hasPermission(Permissions.STAFF_CHAT.getPermission())) {
+                                online.sendMessage(translate("&8[&cStaff&8-&cChat&8] &f" + player.getName() + "&f: " + staffMessageContent));
+                            }
+                        }
+                    }
                 }
             }
 
@@ -166,7 +170,7 @@ public class ChatListener extends ListenerAdapter implements Listener {
                 int position = Core.getLeaderboardManager().getPosition(playerData.getPlayerUUID());
                 // Set regular chat format
                 event.setFormat(translate("&8[" + (position == 1 ? "&6" : position == 2 ? "&3" : position == 3 ? "&c" : "&7")
-                        + position + "# &f- &c" +GeneralUtility.formatNumberWithDots( playerData.getPoints())+"&8] "
+                        + position + "# &f- &c" +GeneralUtility.formatNumber( playerData.getPoints())+"&8] "
                         + (Core.getPlugin().getUltimateTeamsAPI().findTeamByMember(player.getUniqueId()).isPresent() ?
                         "&8[&f" + Core.getPlugin().getUltimateTeamsAPI().findTeamByMember(player.getUniqueId()).get().getName() + "&8] " : "") + "%1$s &8» &f%2$s"));
 
