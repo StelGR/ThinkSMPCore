@@ -97,11 +97,10 @@ public class ConnectionListener implements Listener {
                         .orElse("");
 
                 String tabName = positionColor + position + "# &f- &c"
-                        + GeneralUtility.formatNumber(data.getPoints()) + " "
+                        + GeneralUtility.formatNumber(data.getPoints()) + teamTag + " "
                         + Core.getGroupManagerFunction().getPrefix(onlinePlayer)
                         + onlinePlayer.getName()
-                        + Core.getGroupManagerFunction().getSuffix(onlinePlayer)
-                        + teamTag;
+                        + Core.getGroupManagerFunction().getSuffix(onlinePlayer);
 
                 onlinePlayer.setPlayerListName(translate(tabName));
             }
