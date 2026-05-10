@@ -184,7 +184,7 @@ public final class CustomEnchantEffectListener implements Listener {
         }
 
         Location center = player.getLocation();
-        int converted = 0;
+        boolean converted = false;
 
         for (int x = -2; x <= 2; x++) {
             for (int y = -1; y <= 0; y++) {
@@ -192,12 +192,14 @@ public final class CustomEnchantEffectListener implements Listener {
                     Block block = center.getBlock().getRelative(x, y, z);
 
                     if (!isLava(block.getType())) {
+                        converted = false;
                         continue;
                     }
 
                     Material original = block.getType();
                     block.setType(magma);
-                    converted++;
+
+                    converted = true;
 
                     Bukkit.getScheduler().runTaskLater(manager.plugin(), () -> {
                         if (block.getType() == magma) {
@@ -208,8 +210,8 @@ public final class CustomEnchantEffectListener implements Listener {
             }
         }
 
-        if (converted > 0) {
-            damageItem(player, boots, converted);
+        if (converted) {
+            damageItem(player, boots, 2);
         }
     }
 

@@ -25,29 +25,26 @@ public class Events implements Listener {
     private final Random random = new Random();
 
     public Events() {
-//        Bukkit.getScheduler().runTaskTimer(Core.getPlugin(), () -> {
-//            if (Bukkit.getOnlinePlayers().size() >= 4) {
-//                Random random = new Random();
-//
-//                // Generate X and Z between -50,000 and 50,000
-//                int x = random.nextInt(20_001) - 10_000;
-//                int z = random.nextInt(20_001) - 10_000;
-//
-//                // Get the main world
-//                World world = Bukkit.getWorld("world"); // your main overworld name
-//
-//                if (world != null) {
-//                    // Find highest block Y at this X,Z to avoid underground
-//                    int y = world.getMaxHeight() - 2;
-//
-//                    // Create location
-//                    Location randomLocation = new Location(world, x, y, z);
-//
-//                    // Save it somewhere in your plugin manager
-//                    if (random.nextInt(100) < 40) startMeteor(randomLocation);
-//                }
-//            }
-//        }, 0L, 2 * 60 * 60 * 20L);
+        Bukkit.getScheduler().runTaskTimer(Core.getPlugin(), () -> {
+            if (Bukkit.getOnlinePlayers().size() >= 10) {
+                Random random = new Random();
+
+                int x = random.nextInt(8_001) - 4_000;
+                int z = random.nextInt(8_001) - 4_000;
+
+                World world = Bukkit.getWorld("world");
+
+                if (world != null) {
+                    int y = world.getMaxHeight() - 2;
+
+                    Location randomLocation = new Location(world, x, y, z);
+
+                    if (random.nextInt(100) < 70) {
+                        startMeteor(randomLocation);
+                    }
+                }
+            }
+        }, 0L, 2 * 60 * 60 * 20L);
     }
 
     public void startMeteor(Location spawnLoc) {
@@ -120,7 +117,6 @@ public class Events implements Listener {
         chest.setCustomName(name);
         chest.update();
 
-        // fill the REAL chest inventory (not a fake one)
         fillChest(chest.getBlockInventory(), rarity);
 
         // Announce coords

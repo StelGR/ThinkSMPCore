@@ -2,6 +2,7 @@ package me.thinksmp.game.homeSystem;
 
 import me.thinksmp.Core;
 import me.thinksmp.functions.Permissions;
+import me.thinksmp.managers.GuiManager;
 import me.thinksmp.playerData.PlayerData;
 import me.thinksmp.utility.GeneralUtility;
 import org.bukkit.Bukkit;
@@ -29,6 +30,11 @@ public class HomeCommand implements CommandExecutor {
             return true;
         }
 
+        if (args.length == 0) {
+            GuiManager.openHomeGUI(player);
+            return true;
+        }
+
         int homeId = parseHomeId(player, args);
 
         if (homeId == -1) {
@@ -46,6 +52,12 @@ public class HomeCommand implements CommandExecutor {
         }
 
         PlayerData playerData = Core.getPlayerDataManager().getPlayerData(player);
+
+        if (playerData == null) {
+            player.sendMessage(GeneralUtility.translate("&cYour player data is not loaded yet."));
+            return true;
+        }
+
         PlayerData.HomeData homeData = playerData.getHome(homeId);
 
         if (homeData == null) {
@@ -122,14 +134,10 @@ public class HomeCommand implements CommandExecutor {
     }
 
     private int parseHomeId(Player player, String[] args) {
-        boolean vip = player.hasPermission(Permissions.VIP.getPermission());
-
-        if (args.length == 0) {
-            return 1;
-        }
+        int maxHomes = getMaxHomes(player);
 
         if (args.length > 1) {
-            player.sendMessage(GeneralUtility.translate("&cUsage: /home " + (vip ? "<1-5>" : "")));
+            player.sendMessage(GeneralUtility.translate("&cUsage: /home <1-" + maxHomes + ">"));
             return -1;
         }
 
@@ -147,11 +155,23 @@ public class HomeCommand implements CommandExecutor {
             return -1;
         }
 
-        if (!vip && homeId != 1) {
-            player.sendMessage(GeneralUtility.translate("&cOnly VIP players can use multiple homes."));
+        if (homeId > maxHomes) {
+            player.sendMessage(GeneralUtility.translate("&cYou do not have access to home " + homeId + "."));
             return -1;
         }
 
         return homeId;
+    }
+
+    private int getMaxHomes(Player player) {
+        if (player.hasPermission(Permissions.VIP.getPermission())) {
+            return 5;
+        }
+
+        if (player.hasPermission(Permissions.MEDIA.getPermission())) {
+            return 2;
+        }
+
+        return 1;
     }
 }

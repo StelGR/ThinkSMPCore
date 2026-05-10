@@ -40,7 +40,7 @@ public class LeaderboardManager {
                     changed = true;
                 }
 
-                if (currentPoints >= 50000000 && !Core.getRecipes().isCustomItemCrafted(CustomItem.ABYSSAL_SCYTHE)) {
+                if (currentPoints >= 5000000 && !Core.getRecipes().isCustomItemCrafted(CustomItem.ABYSSAL_SCYTHE)) {
                     if (online.getInventory().firstEmpty() == -1) {
                         online.sendMessage("§cYour inventory is full. Clear one slot to receive the Abyssal Scythe.");
                         return;

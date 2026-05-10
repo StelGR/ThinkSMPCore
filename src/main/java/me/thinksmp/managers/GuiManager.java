@@ -1,12 +1,15 @@
 package me.thinksmp.managers;
 
 import me.thinksmp.Core;
+import me.thinksmp.functions.Permissions;
 import me.thinksmp.playerData.PlayerData;
 import me.thinksmp.utility.GeneralUtility;
 import me.thinksmp.utility.UiUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +18,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class GuiManager {
+
+    public static final String HOME_GUI_TITLE = GeneralUtility.translate("&7Your Homes");
 
     public static void openPlayerInfo(Player player, Player player1) {
         Inventory gui = Bukkit.createInventory(player, 27, ChatColor.GRAY + "Viewing the information of " + ChatColor.RED + player1.getName());
@@ -80,19 +85,145 @@ public class GuiManager {
                             GeneralUtility.translate("&7Hear a sound when you gain points.")),
                     true));
         }
-//        if (playerData.isRemindForPhoto()) {
-//            gui.setItem(15, UiUtility.generateItem(new ItemStack(Material.PAINTING, 1, (short) 2), GeneralUtility.translate("&aPhoto Reminders"),
-//                    Collections.singletonList(
-//                            GeneralUtility.translate("&7Reminds you to take a photo of your country.")),
-//                    true));
-//        } else {
-//            gui.setItem(15, UiUtility.generateItem(new ItemStack(Material.PAINTING, 1, (short) 2), GeneralUtility.translate("&cPhoto Reminders"),
-//                    Collections.singletonList(
-//                            GeneralUtility.translate("&7Reminds you to take a photo of your country.")),
-//                    true));
-//        }
+
         UiUtility.fillWithSpacers(gui);
         player1.openInventory(gui);
     }
 
+    public static void openHomeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(player, 27, HOME_GUI_TITLE);
+        PlayerData playerData = Core.getPlayerDataManager().getPlayerData(player);
+
+        if (playerData == null) {
+            player.sendMessage(GeneralUtility.translate("&cYour player data is not loaded yet."));
+            return;
+        }
+
+        ItemStack glass = UiUtility.generateItem(
+                new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1),
+                GeneralUtility.translate("&7"),
+                Collections.emptyList(),
+                true
+        );
+
+        for (int i = 0; i < gui.getSize(); i++) {
+            gui.setItem(i, glass);
+        }
+
+        int maxHomes = getMaxHomes(player);
+        int[] slots = {11, 12, 13, 14, 15};
+
+        for (int i = 1; i <= 5; i++) {
+            int slot = slots[i - 1];
+
+            if (i > maxHomes) {
+                gui.setItem(slot, createLockedHomeItem(i));
+                continue;
+            }
+
+            PlayerData.HomeData homeData = playerData.getHome(i);
+
+            if (homeData == null) {
+                gui.setItem(slot, createUnsetHomeItem(i));
+                continue;
+            }
+
+            Location location = homeData.toLocation();
+
+            if (location == null || location.getWorld() == null) {
+                gui.setItem(slot, createBrokenHomeItem(i));
+                continue;
+            }
+
+            gui.setItem(slot, createSetHomeItem(i, location));
+        }
+
+        player.openInventory(gui);
+    }
+
+    private static ItemStack createSetHomeItem(int homeId, Location location) {
+        World world = location.getWorld();
+        String dimension = getDimensionName(world);
+
+        return UiUtility.generateItem(
+                new ItemStack(Material.LIME_BED, 1),
+                GeneralUtility.translate("&aHome " + homeId),
+                Arrays.asList(
+                        GeneralUtility.translate("&7Status: &aSet"),
+                        GeneralUtility.translate("&7Coordinates: &e" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ()),
+                        GeneralUtility.translate("&7Dimension: &e" + dimension),
+                        GeneralUtility.translate("&7World: &e" + world.getName()),
+                        "",
+                        GeneralUtility.translate("&eClick to teleport.")
+                ),
+                true
+        );
+    }
+
+    private static ItemStack createUnsetHomeItem(int homeId) {
+        return UiUtility.generateItem(
+                new ItemStack(Material.RED_BED, 1),
+                GeneralUtility.translate("&cHome " + homeId),
+                Arrays.asList(
+                        GeneralUtility.translate("&7Status: &cNot Set"),
+                        "",
+                        GeneralUtility.translate("&7Use &e/sethome " + homeId + " &7to set this home.")
+                ),
+                true
+        );
+    }
+
+    private static ItemStack createBrokenHomeItem(int homeId) {
+        return UiUtility.generateItem(
+                new ItemStack(Material.RED_BED, 1),
+                GeneralUtility.translate("&cHome " + homeId),
+                Arrays.asList(
+                        GeneralUtility.translate("&7Status: &cInvalid"),
+                        GeneralUtility.translate("&7The world for this home no longer exists.")
+                ),
+                true
+        );
+    }
+
+    private static ItemStack createLockedHomeItem(int homeId) {
+        String required = homeId == 2 ? "Media" : "VIP";
+
+        return UiUtility.generateItem(
+                new ItemStack(Material.BARRIER, 1),
+                GeneralUtility.translate("&cHome " + homeId + " Locked"),
+                Arrays.asList(
+                        GeneralUtility.translate("&7You don't have any more homes."),
+                        GeneralUtility.translate("&7Required Rank: &e" + required)
+                ),
+                true
+        );
+    }
+
+    private static int getMaxHomes(Player player) {
+        if (player.hasPermission(Permissions.VIP.getPermission())) {
+            return 5;
+        }
+
+        if (player.hasPermission(Permissions.MEDIA.getPermission())) {
+            return 2;
+        }
+
+        return 1;
+    }
+
+    private static String getDimensionName(World world) {
+        if (world == null) {
+            return "Unknown";
+        }
+
+        if (world.getEnvironment() == World.Environment.NETHER) {
+            return "Nether";
+        }
+
+        if (world.getEnvironment() == World.Environment.THE_END) {
+            return "The End";
+        }
+
+        return "Overworld";
+    }
 }
