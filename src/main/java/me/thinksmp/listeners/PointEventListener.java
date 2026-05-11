@@ -180,6 +180,7 @@ public class PointEventListener implements Listener {
             case ILLUSIONER:
             case RAVAGER:
             case PHANTOM:
+            case WITHER_SKELETON:
                 playerData.setPoints(playerData.getPoints() + Points.MONSTER.getPoints());
                 killer.sendMessage(ChatColor.GREEN + "+" + Points.MONSTER.getPoints() + " points for killing a monster!");
                 if (playerData.isHasPointSound()) killer.playSound(killer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
