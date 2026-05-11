@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -195,6 +196,36 @@ public class ItemAbilities implements Listener {
 
         setCooldown(player, item, 45);
 
+        double damage = 2.0D;
+        int knockback = 0;
+        boolean critical = true;
+        int fireTicks = 0;
+
+        if (event.getProjectile() instanceof AbstractArrow originalArrow) {
+            damage = originalArrow.getDamage();
+            knockback = originalArrow.getKnockbackStrength();
+            critical = originalArrow.isCritical();
+            fireTicks = originalArrow.getFireTicks();
+        } else if (bow != null) {
+            int power = bow.getEnchantmentLevel(Enchantment.POWER);
+            int punch = bow.getEnchantmentLevel(Enchantment.PUNCH);
+            boolean flame = bow.containsEnchantment(Enchantment.FLAME);
+
+            damage = 2.0D;
+
+            if (power > 0) {
+                damage += (power * 0.5D) + 0.5D;
+            }
+
+            knockback = punch;
+            fireTicks = flame ? 100 : 0;
+        }
+
+        double finalDamage = damage;
+        int finalKnockback = knockback;
+        boolean finalCritical = critical;
+        int finalFireTicks = fireTicks;
+
         new BukkitRunnable() {
             int shots = 0;
 
@@ -206,14 +237,21 @@ public class ItemAbilities implements Listener {
                 }
 
                 Arrow arrow = player.launchProjectile(Arrow.class);
-                arrow.setVelocity(player.getLocation().getDirection().normalize().multiply(3.2));
+                arrow.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(3.2D));
                 arrow.setShooter(player);
                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
-                arrow.setFireTicks(100);
+
+                arrow.setDamage(finalDamage);
+                arrow.setKnockbackStrength(finalKnockback);
+                arrow.setCritical(finalCritical);
+
+                if (finalFireTicks > 0) {
+                    arrow.setFireTicks(finalFireTicks);
+                }
 
                 shots++;
             }
-        }.runTaskTimer(Core.getPlugin(), 2L, 2L);
+        }.runTaskTimer(Core.getPlugin(), 10L, 10L);
     }
 
     @EventHandler

@@ -89,7 +89,7 @@ public class Messaging implements CommandExecutor {
     }
 
     private void sendMessage(Player sender, Player target, String message) {
-        target.sendMessage(GeneralUtility.translate(sender.getDisplayName() + " &7to &eMe: &f" + sender.getDisplayName()));
+        target.sendMessage(GeneralUtility.translate(sender.getDisplayName() + " &7to &eMe: &f" + message));
         sender.sendMessage(GeneralUtility.translate("&eMe &7to " + target.getDisplayName() + "&7: &f" + message));
     }
 

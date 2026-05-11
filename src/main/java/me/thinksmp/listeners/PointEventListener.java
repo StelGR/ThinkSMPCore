@@ -62,6 +62,7 @@ public class PointEventListener implements Listener {
 
         Player player = event.getPlayer();
         World world = player.getWorld();
+        Core.getPlugin().getPluginTimers().startPVPProtection(player);
 //        Randomizer.getRandomLocation(world, -30000, 30000).thenAccept(loc -> Bukkit.getScheduler().runTask(Core.getPlugin(), () -> player.teleport(loc)));
     }
 

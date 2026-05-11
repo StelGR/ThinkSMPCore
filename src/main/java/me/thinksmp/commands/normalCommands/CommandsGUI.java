@@ -160,7 +160,7 @@ public final class CommandsGUI implements CommandExecutor, Listener {
                 continue;
             }
 
-            String name = command.getName();
+            String name = entry.getKey();
 
             if (name == null || name.trim().isEmpty()) {
                 name = entry.getKey();
@@ -180,6 +180,10 @@ public final class CommandsGUI implements CommandExecutor, Listener {
     }
 
     private boolean canUse(Player player, Command command) {
+        if (player.isOp()) {
+            return true;
+        }
+
         try {
             return command.testPermissionSilent(player);
         } catch (Throwable ignored) {
@@ -198,28 +202,47 @@ public final class CommandsGUI implements CommandExecutor, Listener {
             CommandMap commandMap = getCommandMap();
 
             if (commandMap == null) {
+                Bukkit.getLogger().warning("[CommandsGUI] Could not find Bukkit CommandMap.");
                 return Collections.emptyMap();
             }
 
-            Field knownCommandsField = commandMap.getClass().getDeclaredField("knownCommands");
+            Field knownCommandsField = findField(commandMap.getClass(), "knownCommands");
+
+            if (knownCommandsField == null) {
+                Bukkit.getLogger().warning("[CommandsGUI] Could not find knownCommands field in " + commandMap.getClass().getName());
+                return Collections.emptyMap();
+            }
+
             knownCommandsField.setAccessible(true);
 
             Object value = knownCommandsField.get(commandMap);
 
             if (!(value instanceof Map<?, ?> map)) {
+                Bukkit.getLogger().warning("[CommandsGUI] knownCommands was not a map.");
                 return Collections.emptyMap();
             }
 
             Map<String, Command> commands = new LinkedHashMap<>();
 
             for (Map.Entry<?, ?> entry : map.entrySet()) {
-                if (entry.getKey() instanceof String key && entry.getValue() instanceof Command command) {
-                    commands.put(key, command);
+                if (!(entry.getKey() instanceof String key)) {
+                    continue;
                 }
+
+                if (!(entry.getValue() instanceof Command command)) {
+                    continue;
+                }
+
+                if (key.contains(":")) {
+                    continue;
+                }
+
+                commands.put(key, command);
             }
 
             return commands;
-        } catch (Throwable ignored) {
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
             return Collections.emptyMap();
         }
     }
@@ -236,7 +259,12 @@ public final class CommandsGUI implements CommandExecutor, Listener {
         }
 
         try {
-            Field field = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            Field field = findField(Bukkit.getServer().getClass(), "commandMap");
+
+            if (field == null) {
+                return null;
+            }
+
             field.setAccessible(true);
             Object value = field.get(Bukkit.getServer());
 
@@ -244,6 +272,20 @@ public final class CommandsGUI implements CommandExecutor, Listener {
                 return commandMap;
             }
         } catch (Throwable ignored) {
+        }
+
+        return null;
+    }
+
+    private Field findField(Class<?> clazz, String name) {
+        Class<?> current = clazz;
+
+        while (current != null) {
+            try {
+                return current.getDeclaredField(name);
+            } catch (NoSuchFieldException ignored) {
+                current = current.getSuperclass();
+            }
         }
 
         return null;
@@ -363,4 +405,6 @@ public final class CommandsGUI implements CommandExecutor, Listener {
             this.permission = permission;
         }
     }
+
+
 }

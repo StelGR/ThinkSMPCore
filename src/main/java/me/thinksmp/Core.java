@@ -358,6 +358,13 @@ public class Core extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("sethome")).setExecutor(new SetHomeCommand());
         Objects.requireNonNull(getCommand("home")).setExecutor(new HomeCommand());
+
+
+        // lazy way to add this for now
+        CommandsGUI commandsGUICommand = new CommandsGUI();
+
+        Objects.requireNonNull(getCommand("commands")).setExecutor(commandsGUICommand);
+        Bukkit.getPluginManager().registerEvents(commandsGUICommand, this);
     }
 
     public void setupScoreboard() {

@@ -78,3 +78,5 @@ commands:
   home:
     description: Teleport to home(s).
     usage: /home [1-5]
+  commands:
+    description: See all commands

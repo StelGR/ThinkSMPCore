@@ -26,7 +26,7 @@ public class Events implements Listener {
 
     public Events() {
         Bukkit.getScheduler().runTaskTimer(Core.getPlugin(), () -> {
-            if (Bukkit.getOnlinePlayers().size() >= 10) {
+            if (Bukkit.getOnlinePlayers().size() >= 8) {
                 Random random = new Random();
 
                 int x = random.nextInt(8_001) - 4_000;
@@ -39,12 +39,12 @@ public class Events implements Listener {
 
                     Location randomLocation = new Location(world, x, y, z);
 
-                    if (random.nextInt(100) < 70) {
+                    if (random.nextInt(100) < 71) {
                         startMeteor(randomLocation);
                     }
                 }
             }
-        }, 0L, 2 * 60 * 60 * 20L);
+        }, 0L, 30 * 60 * 20L);
     }
 
     public void startMeteor(Location spawnLoc) {
